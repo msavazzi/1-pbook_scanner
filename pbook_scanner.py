@@ -55,7 +55,7 @@ class ScannerApp:
             self.root.destroy()
             return
 
-        # File handling
+        # File handling with default filename YYYYMMDD-HHMM.txt
         self.save_path = self.ask_save_file()
 
         # Barcode stability tracking
@@ -121,9 +121,15 @@ class ScannerApp:
         except Exception as e:
             messagebox.showerror("Camera Error", f"Failed to switch camera: {e}")
 
+    # Ask save file with default timestamped name
     def ask_save_file(self):
-        file = filedialog.asksaveasfilename(defaultextension=".txt",
-                                            filetypes=[("Text Files", "*.txt"), ("CSV Files", "*.csv")])
+        default_name = datetime.datetime.now().strftime("%Y%m%d-%H%M.txt")
+        file = filedialog.asksaveasfilename(
+            defaultextension=".txt",
+            filetypes=[("Text Files", "*.txt"), ("CSV Files", "*.csv")],
+            initialfile=default_name,
+            title="Select Save File"
+        )
         if not file:
             messagebox.showerror("No File Selected", "You must select a save file to continue.")
             self.root.destroy()
@@ -250,6 +256,7 @@ class ScannerApp:
 
             # Save if stable & not recently saved
             if count >= self.stable_threshold and elapsed > self.duplicate_timeout:
+                self.save_result(barcode_data)
                 self.log_result(barcode_data)
                 self.recent_saves[barcode_data] = current_time
                 self.result_label.config(text=f"Barcode Scanned: {barcode_data}")
@@ -296,4 +303,3 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = ScannerApp(root)
     root.mainloop()
-
