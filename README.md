@@ -10,7 +10,8 @@ A Windows 11 standalone GUI application that uses your webcam to scan **barcodes
 - Multi-Camera Support
 - Scrollable GUI log, Clear log button
 - Prevent duplicates with timeout
-- Default save file name suggested as YYYYMMDD-HHMM.txt
+- Default save file name suggested as YYYYMMDD-HHMM.txt and printed before dialog
+- Default camera index printed before opening camera
 
 ## Requirements
 
@@ -21,10 +22,11 @@ A Windows 11 standalone GUI application that uses your webcam to scan **barcodes
 ## Usage
 
 1. Run `scanner.py`
-2. Select save file (default: YYYYMMDD-HHMM.txt)
-3. Select camera
-4. Barcode scans automatically; Text OCR with spacebar
-5. Clear log with button
+2. Console will print default save file and camera index
+3. Select save file (default: YYYYMMDD-HHMM.txt)
+4. Select camera
+5. Barcode scans automatically; Text OCR with spacebar
+6. Clear log with button
 
 ## File Saving
 

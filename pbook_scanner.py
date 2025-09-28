@@ -22,6 +22,7 @@ class ScannerApp:
         # Camera selection
         self.camera_index = 0
         self.available_cameras = self.get_available_cameras()
+        print(f"Default camera index: {self.camera_index}")  # Print default
         camera_frame = tk.Frame(root)
         camera_frame.pack(pady=5)
         tk.Label(camera_frame, text="Camera:").pack(side="left")
@@ -124,22 +125,27 @@ class ScannerApp:
     # Ask save file with default timestamped name
     def ask_save_file(self):
         default_name = datetime.datetime.now().strftime("%Y%m%d-%H%M.txt")
+        print(f"Default save file: {default_name}")  # Print default
+
         file = filedialog.asksaveasfilename(
             defaultextension=".txt",
             filetypes=[("Text Files", "*.txt"), ("CSV Files", "*.csv")],
             initialfile=default_name,
             title="Select Save File"
         )
+
+        # Fallback to default if user cancels
         if not file:
-            messagebox.showerror("No File Selected", "You must select a save file to continue.")
-            self.root.destroy()
-            return None
+            file = default_name
+            print(f"No file selected. Using default: {file}")
+
         if os.path.exists(file):
             choice = messagebox.askyesno("File Exists", "File already exists.\nYes = Replace, No = Append")
-            if choice:  # Replace
+            if choice:
                 open(file, "w", encoding="utf-8").close()
         return file
 
+    # Save and log methods
     def save_result(self, text):
         with open(self.save_path, "a", encoding="utf-8") as f:
             f.write(f"{datetime.datetime.now()}\t{text}\n")
@@ -155,6 +161,7 @@ class ScannerApp:
         self.log_box.delete(1.0, tk.END)
         self.log_box.config(state="disabled")
 
+    # OCR save
     def save_highlighted_text(self, event=None):
         with self.ocr_lock:
             if self.highlighted_text:
@@ -172,6 +179,7 @@ class ScannerApp:
             self.highlighted_text = None
             self.show_ocr_boxes = False
 
+    # OCR thread
     def run_ocr_thread(self, gray_frame):
         try:
             data = pytesseract.image_to_data(gray_frame, output_type=pytesseract.Output.DICT)
@@ -193,6 +201,7 @@ class ScannerApp:
         except Exception as e:
             print(f"OCR thread error: {e}")
 
+    # Main update loop
     def update_frame(self):
         if not hasattr(self, "cap") or not self.cap.isOpened():
             self.cap = self.open_camera(self.camera_index)
